@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>موقع PTC</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 50px; background-color: #f4f4f4; }
+        .container { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); width: 350px; margin: auto; }
+        input, button { margin: 10px; padding: 10px; width: 90%; border: 1px solid #ccc; border-radius: 5px; }
+        button { background-color: #28a745; color: white; cursor: pointer; transition: 0.3s; }
+        button:hover { background-color: #218838; }
+        #dashboard { display: none; }
+        #error-message { color: red; display: none; font-weight: bold; }
+        #success-message { color: green; display: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>مرحبًا بك في موقع PTC</h1>
+
+    <div id="auth" class="container">
+        <h2>تسجيل الدخول</h2>
+        <input type="email" id="login-email" placeholder="البريد الإلكتروني">
+        <input type="password" id="login-password" placeholder="كلمة المرور">
+        <button onclick="login()">تسجيل الدخول</button>
+
+        <h2>إنشاء حساب جديد</h2>
+        <input type="email" id="register-email" placeholder="البريد الإلكتروني">
+        <input type="password" id="register-password" placeholder="كلمة المرور">
+        <input type="text" id="referral-code" placeholder="رابط الإحالة (اختياري)">
+        <button onclick="register()">تسجيل</button>
+    </div>
+
+    <div id="dashboard" class="container">
+        <h2>لوحة التحكم</h2>
+        <p>رابط الإحالة الخاص بك:</p>
+        <input type="text" id="referral-link" readonly>
+        <button onclick="copyReferral()">نسخ الرابط</button>
+
+        <h3>أرباحك:</h3>
+        <p id="earnings">0$</p>
+
+        <h3>سحب الأرباح عبر PayPal</h3>
+        <input type="number" id="withdraw-amount" placeholder="المبلغ المطلوب ($)" min="5">
+        <button onclick="withdraw()">سحب الأرباح</button>
+        <p id="error-message">رصيد غير كافٍ أو الحد الأدنى للسحب 5$</p>
+        <p id="success-message">تم إرسال طلب السحب بنجاح!</p>
+    </div>
+
+    <script>
+        let currentEarnings = 0;
+
+        function showDashboard(referralLink, earnings) {
+            document.getElementById('auth').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            document.getElementById('referral-link').value = referralLink;
+            document.getElementById('earnings').innerText = earnings + '$';
+            currentEarnings = earnings;
+        }
+
+        function copyReferral() {
+            const link = document.getElementById('referral-link');
+            link.select();
+            document.execCommand('copy');
+            alert('تم نسخ رابط الإحالة!');
+        }
+
+        function withdraw() {
+            const amount = parseFloat(document.getElementById('withdraw-amount').value);
+            const errorMessage = document.getElementById('error-message');
+            const successMessage = document.getElementById('success-message');
+
+            if (amount < 5 || amount > currentEarnings) {
+                errorMessage.style.display = 'block';
+                successMessage.style.display = 'none';
+                return;
+            }
+            errorMessage.style.display = 'none';
+
+            if (!confirm(`هل أنت متأكد أنك تريد سحب ${amount}$؟`)) return;
+
+            currentEarnings -= amount;
+            document.getElementById('earnings').innerText = currentEarnings + '$';
+            successMessage.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
